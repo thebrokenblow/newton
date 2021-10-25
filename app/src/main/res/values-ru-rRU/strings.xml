@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NEWTON</string>
+    <string name="resultButton">Результат</string>
+    <string name="enter_expression">Введите выражение</string>
+    <string name="enter_operation">Введите операцию</string>
+    <string name="a_really_micro_micro_service_for_advanced_math">Реальный микро-микро-сервис для продвинутой математики.</string>
+    <string name="newton">newtom</string>
+    <string name="resultTextView">Ответ:</string>
+</resources>

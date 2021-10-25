@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#000"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/textViewNewton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:height="50dp"
+        android:text="@string/newton"
+        android:textAlignment="center"
+        android:textColor="#fff"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:paddingTop="20dp"
+        />
+
+    <TextView
+        android:id="@+id/textViewAdvancedMath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:height="50dp"
+        android:text="@string/a_really_micro_micro_service_for_advanced_math"
+        android:textAlignment="center"
+        android:textColor="#fff"
+        android:textSize="17sp"
+        android:paddingTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:height="50dp"
+        android:textColor="#fff"
+        android:paddingTop="15dp"
+        android:text="@string/resultTextView"
+        android:textSize="17sp"
+        />
+
+    <EditText
+        android:id="@+id/operation"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="#fff"
+        android:hint="@string/enter_operation"
+        android:inputType=""
+        android:minHeight="48dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:paddingTop="15dp"
+        android:textSize="15sp"
+        />
+
+    <EditText
+        android:id="@+id/expression"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="#fff"
+        android:hint="@string/enter_expression"
+        android:inputType=""
+        android:minHeight="48dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:paddingTop="15dp"
+        android:textSize="15sp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonResult"
+        app:cornerRadius="30dp"
+        android:text="@string/resultButton"
+        android:textColor="#fff"
+        app:strokeColor="@color/white"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+</LinearLayout>

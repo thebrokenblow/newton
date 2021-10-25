@@ -1,0 +1,9 @@
+<resources>
+    <string name="newton">NEWTON</string>
+    <string name="a_really_micro_micro_service_for_advanced_math">A really micro micro-service for advanced math.</string>
+    <string name="enter_operation">Enter operation</string>
+    <string name="enter_expression">Enter expression</string>
+    <string name="resultButton">Result</string>
+    <string name="app_name">NEWTON</string>
+    <string name="resultTextView">Result:</string>
+</resources>
