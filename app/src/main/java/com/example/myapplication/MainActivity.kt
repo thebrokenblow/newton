@@ -8,6 +8,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.room.*
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -17,7 +20,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
-import java.util.*
+import kotlin.properties.Delegates
 
 @Entity
 data class NewtonRoom(
@@ -52,19 +55,22 @@ private interface APINewton {
                   @Path("expression") expression : String) : Call<Newton>
 }
 
-@DelicateCoroutinesApi
-class MainActivity : AppCompatActivity() {
+enum class ResultOfNewton{
+    Nothing,
+    YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression,
+    InputError;
+    var result: String? = null
+}
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val textView = findViewById<TextView>(R.id.textViewResult)
-        outState.putString(RESULT, textView.text.toString())
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+class NewtonResult {
+    @DelicateCoroutinesApi
+    fun getNewtonResult(
+        applicationContext: MainActivity,
+        operation: String,
+        expression: String,
+        addingViewModel: UpdateLastResult,
+        ) {
+        val resultNewtonEnum: ResultOfNewton = ResultOfNewton.Nothing
 
         val retrofit = Retrofit.Builder().baseUrl("https://newton.now.sh/api/v2/")
             .addConverterFactory(GsonConverterFactory.create()).build()
@@ -74,57 +80,92 @@ class MainActivity : AppCompatActivity() {
         val db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "newton").build()
         val newtonDao = db.newtonDao()
 
+        publicNewton.getNewton(operation, expression).enqueue(object : Callback<Newton> {
+            @SuppressLint("SetTextI18n")
+            override fun onResponse(call: Call<Newton>, response: Response<Newton>) {
+                val resultNewton = response.body()
+                if (resultNewton != null) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        newtonDao.dropAll()
+                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()))
+                    }
+                    resultNewtonEnum.result = resultNewton.result.toString()
+                    addingViewModel.updateLastResult(resultNewtonEnum)
+                } else addingViewModel.updateLastResult(ResultOfNewton.YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression)
+            }
+            override fun onFailure(call: Call<Newton>, t: Throwable) {
+                addingViewModel.updateLastResult(ResultOfNewton.InputError)
+            }
+        })
+    }
+}
+
+@DelicateCoroutinesApi
+interface UpdateLastResult {
+    fun updateLastResult(result: ResultOfNewton)
+}
+
+@DelicateCoroutinesApi
+class AddingViewModel : ViewModel(), UpdateLastResult {
+    private var latResult: MutableLiveData<ResultOfNewton> = MutableLiveData(ResultOfNewton.Nothing)
+    fun getLastResult() = latResult
+    var operation: String by Delegates.observable("",{ _, _, _ -> updateLastResult(ResultOfNewton.Nothing)})
+    var expression: String by Delegates.observable("",{ _, _, _ -> updateLastResult(ResultOfNewton.Nothing)})
+
+    fun getResult(applicationContext: MainActivity) {
+        NewtonResult().getNewtonResult(applicationContext, operation, expression, this)
+    }
+    override fun updateLastResult(result: ResultOfNewton) {
+        latResult.value = result
+    }
+}
+
+@DelicateCoroutinesApi
+class MainActivity : AppCompatActivity() {
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val viewModel: AddingViewModel by viewModels()
+
+        viewModel.getLastResult().observe(this, {
+            if (it != null) {
+                when (it) {
+                    ResultOfNewton.YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression ->
+                        Toast.makeText(this, getString(R.string.error_result), Toast.LENGTH_SHORT)
+                            .show()
+                    ResultOfNewton.InputError ->
+                        Toast.makeText(
+                            this,
+                            getString(R.string.error_input_result),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    ResultOfNewton.Nothing -> findViewById<TextView>(R.id.textViewResult).text =
+                        getString(R.string.resultTextView) + " " + it.result
+                }
+            }
+        })
+
+        val db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "newton").build()
+        val newtonDao = db.newtonDao()
+
         GlobalScope.launch(Dispatchers.IO) {
-            val adapter = NewtonRoom(newtonDao.getAll().result)
+            val getAllResult = NewtonRoom(newtonDao.getAll().result)
             launch(Dispatchers.Main) {
-                findViewById<TextView>(R.id.textViewResult).text =
-                    getString(R.string.resultTextView) + " "+ adapter.result
+                findViewById<TextView>(R.id.textViewResult).text = getString(R.string.resultTextView) + " " + getAllResult.result
             }
         }
 
-        if (savedInstanceState != null)
-            findViewById<TextView>(R.id.textViewResult).text = savedInstanceState.getString(RESULT)
-
         findViewById<Button>(R.id.buttonResult).setOnClickListener {
-
-            publicNewton.getNewton(
-                findViewById<EditText>(R.id.operation).text.toString(),
-                findViewById<EditText>(R.id.expression).text.toString()
-            ).enqueue(object : Callback<Newton> {
-
-                @SuppressLint("SetTextI18n")
-                override fun onResponse(call: Call<Newton>, response: Response<Newton>) {
-                    val resultNewton = response.body()
-                    if (resultNewton != null) {
-                        GlobalScope.launch(Dispatchers.IO) {
-                            newtonDao.dropAll()
-                            newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()))
-                        }
-                        findViewById<TextView>(R.id.textViewResult).text =
-                            getString(R.string.resultTextView) + " " + resultNewton.result.toString()
-                    } else Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.error_result),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                override fun onFailure(call: Call<Newton>, t: Throwable) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.error_input_result),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
+            viewModel.operation = findViewById<EditText>(R.id.operation).text.toString()
+            viewModel.expression = findViewById<EditText>(R.id.expression).text.toString()
+            viewModel.getResult(this)
         }
 
         findViewById<Button>(R.id.buttonInformation).setOnClickListener {
             startActivity(Intent(this, UsageInformationActivity::class.java))
         }
-    }
-
-    companion object {
-        const val RESULT = "RESULT"
     }
 }
