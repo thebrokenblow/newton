@@ -167,5 +167,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.buttonInformation).setOnClickListener {
             startActivity(Intent(this, UsageInformationActivity::class.java))
         }
+        findViewById<Button>(R.id.shareInformation).setOnClickListener {
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_TEXT, findViewById<TextView>(R.id.textViewResult).text.toString())
+            intent.type = "text/plain"
+            val intentCreateChooser = Intent.createChooser(intent, null)
+            startActivity(intentCreateChooser)
+        }
     }
 }

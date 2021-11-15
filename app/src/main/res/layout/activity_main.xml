@@ -86,13 +86,37 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonInformation"
-        app:cornerRadius="30dp"
-        android:text="@string/usage_information"
-        android:textColor="#fff"
-        app:strokeColor="@color/white"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000"
+        android:orientation="horizontal"
+        tools:context=".MainActivity"
+        tools:ignore="Overdraw">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonInformation"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/usage_information"
+            android:textColor="#fff"
+            app:cornerRadius="30dp"
+            app:strokeColor="@color/white"
+            android:layout_marginEnd="5dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shareInformation"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Share"
+            android:textColor="#fff"
+            app:cornerRadius="30dp"
+            android:width="215dp"
+            app:strokeColor="@color/white" />
+
+    </LinearLayout>
+
+
 </LinearLayout>
