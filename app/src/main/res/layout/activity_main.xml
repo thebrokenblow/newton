@@ -46,35 +46,52 @@
         android:textSize="17sp"
         />
 
-    <EditText
-        android:id="@+id/operation"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/StyleOperation"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        tools:ignore="ExtraText"
         android:layout_height="wrap_content"
-        android:autofillHints="#fff"
-        android:hint="@string/enter_operation"
-        android:inputType=""
-        android:minHeight="48dp"
-        android:textColor="#fff"
-        android:textColorHint="#fff"
-        android:paddingTop="15dp"
-        android:textSize="15sp"
-        />
+        android:layout_width="match_parent"
+        android:textColorHint="#fff">
 
-    <EditText
-        android:id="@+id/expression"
+        <EditText
+            android:id="@+id/operation"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="#fff"
+            android:hint="@string/enter_operation"
+            android:inputType=""
+            android:minHeight="48dp"
+            android:paddingTop="15dp"
+            android:textColor="#fff"
+            android:textSize="15sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/StyleExpression"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        tools:ignore="ExtraText"
         android:layout_height="wrap_content"
-        android:autofillHints="#fff"
-        android:hint="@string/enter_expression"
-        android:inputType=""
-        android:minHeight="48dp"
-        android:textColor="#fff"
-        android:textColorHint="#fff"
-        android:paddingTop="15dp"
-        android:textSize="15sp"
-        />
+        android:layout_width="match_parent"
+        android:textColorHint="#fff">
+
+        <EditText
+            android:id="@+id/expression"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="#fff"
+            android:hint="@string/enter_expression"
+            android:inputType=""
+            android:minHeight="48dp"
+            android:paddingTop="15dp"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textSize="15sp"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonResult"

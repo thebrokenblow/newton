@@ -144,12 +144,14 @@ class MainActivity : AppCompatActivity() {
                     ResultOfNewton.YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression ->
                         Toast.makeText(this, getString(R.string.error_result), Toast.LENGTH_SHORT)
                             .show()
+
                     ResultOfNewton.InputError ->
                         Toast.makeText(
                             this,
                             getString(R.string.error_input_result),
                             Toast.LENGTH_SHORT
                         ).show()
+
                     ResultOfNewton.Nothing -> findViewById<TextView>(R.id.textViewResult).text =
                         getString(R.string.resultTextView) + " " + it.result
                 }
