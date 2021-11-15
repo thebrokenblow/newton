@@ -21,10 +21,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import kotlin.properties.Delegates
+import androidx.room.Database
+
+import androidx.room.Room
+
+
+
 
 @Entity
 data class NewtonRoom(
     @ColumnInfo(name = "result") val result: String,
+//    @ColumnInfo(name = "operation") val operation: String,
+//    @ColumnInfo(name = "expression") val expression: String,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
@@ -87,7 +95,7 @@ class NewtonResult {
                 if (resultNewton != null) {
                     GlobalScope.launch(Dispatchers.IO) {
                         newtonDao.dropAll()
-                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()))
+                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()/*, operation, expression*/))
                     }
                     resultNewtonEnum.result = resultNewton.result.toString()
                     addingViewModel.updateLastResult(resultNewtonEnum)
@@ -152,9 +160,11 @@ class MainActivity : AppCompatActivity() {
         val newtonDao = db.newtonDao()
 
         GlobalScope.launch(Dispatchers.IO) {
-            val getAllResult = NewtonRoom(newtonDao.getAll().result)
+            val getAllResult = NewtonRoom(newtonDao.getAll().result/*, newtonDao.getAll().operation, newtonDao.getAll().expression*/)
             launch(Dispatchers.Main) {
                 findViewById<TextView>(R.id.textViewResult).text = getString(R.string.resultTextView) + " " + getAllResult.result
+//                findViewById<EditText>(R.id.operation).setText(getAllResult.operation)
+//                findViewById<EditText>(R.id.expression).setText(getAllResult.expression)
             }
         }
 
@@ -170,7 +180,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.shareInformation).setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_TEXT, findViewById<TextView>(R.id.textViewResult).text.toString())
+            intent.putExtra(Intent.EXTRA_TEXT,
+                 getString(R.string.enter_operation) + ": " + findViewById<TextView>(R.id.operation).text.toString() + "\n" +
+                       getString(R.string.enter_expression) + ": " + findViewById<TextView>(R.id.expression).text.toString() + "\n" +
+                         findViewById<TextView>(R.id.textViewResult).text.toString()
+            )
             intent.type = "text/plain"
             val intentCreateChooser = Intent.createChooser(intent, null)
             startActivity(intentCreateChooser)
