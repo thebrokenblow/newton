@@ -103,6 +103,24 @@ class NewtonResult {
             }
         })
     }
+
+    @DelicateCoroutinesApi
+    fun getNewtonResultBetweenSessions1(addingViewModel: UpdateLastResult, newtonDao: NewtonDao) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val resultNewtonEnum: ResultOfNewton = ResultOfNewton.Nothing
+            if (newtonDao.getAll() != null) {
+                val getAllResult = NewtonRoom(
+                    newtonDao.getAll()!!.result,
+                    newtonDao.getAll()!!.operation,
+                    newtonDao.getAll()!!.expression
+                )
+                launch(Dispatchers.Main) {
+                    resultNewtonEnum.result = getAllResult.result
+                    addingViewModel.updateLastResult(resultNewtonEnum)
+                }
+            }
+        }
+    }
 }
 
 @DelicateCoroutinesApi
@@ -110,8 +128,12 @@ interface UpdateLastResult {
     fun updateLastResult(result: ResultOfNewton)
 }
 
+interface GetNewtonResultBetweenSessions {
+    fun getNewtonResultBetweenSessions(newtonDao: NewtonDao)
+}
+
 @DelicateCoroutinesApi
-class AddingViewModel : ViewModel(), UpdateLastResult {
+class AddingViewModel : ViewModel(), UpdateLastResult, GetNewtonResultBetweenSessions {
     private var latResult: MutableLiveData<ResultOfNewton> = MutableLiveData(ResultOfNewton.Nothing)
     fun getLastResult() = latResult
     var operation: String by Delegates.observable("",{ _, _, _ -> updateLastResult(ResultOfNewton.Nothing)})
@@ -122,6 +144,10 @@ class AddingViewModel : ViewModel(), UpdateLastResult {
     }
     override fun updateLastResult(result: ResultOfNewton) {
         latResult.value = result
+    }
+
+    override fun getNewtonResultBetweenSessions(newtonDao: NewtonDao) {
+       NewtonResult().getNewtonResultBetweenSessions1(this, newtonDao)
     }
 }
 
@@ -157,23 +183,7 @@ class MainActivity : AppCompatActivity() {
 
         val db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "newton").build()
         val newtonDao = db.newtonDao()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            if (newtonDao.getAll() != null) {
-                val getAllResult = NewtonRoom(
-                    newtonDao.getAll()!!.result,
-                    newtonDao.getAll()!!.operation,
-                    newtonDao.getAll()!!.expression
-                )
-
-                launch(Dispatchers.Main) {
-                    findViewById<TextView>(R.id.textViewResult).text =
-                        getString(R.string.resultTextView) + " " + getAllResult.result
-                    findViewById<EditText>(R.id.operation).setText(getAllResult.operation)
-                    findViewById<EditText>(R.id.expression).setText(getAllResult.expression)
-                }
-            }
-        }
+        viewModel.getNewtonResultBetweenSessions(newtonDao)
 
         findViewById<Button>(R.id.buttonResult).setOnClickListener {
             viewModel.operation = findViewById<EditText>(R.id.operation).text.toString()
