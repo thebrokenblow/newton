@@ -28,8 +28,6 @@ import androidx.room.Room
 @Entity
 data class NewtonRoom(
     @ColumnInfo(name = "result") val result: String,
-    @ColumnInfo(name = "operation") val operation: String,
-    @ColumnInfo(name = "expression") val expression: String,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
@@ -92,7 +90,7 @@ class NewtonResult {
                 if (resultNewton != null) {
                     GlobalScope.launch(Dispatchers.IO) {
                         newtonDao.dropAll()
-                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString(), operation, expression))
+                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()))
                     }
                     resultNewtonEnum.result = resultNewton.result.toString()
                     addingViewModel.updateLastResult(resultNewtonEnum)
@@ -105,17 +103,13 @@ class NewtonResult {
     }
 
     @DelicateCoroutinesApi
-    fun getNewtonResultBetweenSessions1(addingViewModel: UpdateLastResult, newtonDao: NewtonDao) {
+    fun getNewtonResultBetweenSessions(addingViewModel: UpdateLastResult, newtonDao: NewtonDao) {
         GlobalScope.launch(Dispatchers.IO) {
             val resultNewtonEnum: ResultOfNewton = ResultOfNewton.Nothing
-            if (newtonDao.getAll() != null) {
-                val getAllResult = NewtonRoom(
-                    newtonDao.getAll()!!.result,
-                    newtonDao.getAll()!!.operation,
-                    newtonDao.getAll()!!.expression
-                )
+            val resultNewtonDao = newtonDao.getAll()?.let { NewtonRoom(it.result) }
+            if (resultNewtonDao != null) {
                 launch(Dispatchers.Main) {
-                    resultNewtonEnum.result = getAllResult.result
+                    resultNewtonEnum.result = resultNewtonDao.result
                     addingViewModel.updateLastResult(resultNewtonEnum)
                 }
             }
@@ -129,7 +123,7 @@ interface UpdateLastResult {
 }
 
 interface GetNewtonResultBetweenSessions {
-    fun getNewtonResultBetweenSessions(newtonDao: NewtonDao)
+    fun init(newtonDao: NewtonDao)
 }
 
 @DelicateCoroutinesApi
@@ -146,8 +140,8 @@ class AddingViewModel : ViewModel(), UpdateLastResult, GetNewtonResultBetweenSes
         latResult.value = result
     }
 
-    override fun getNewtonResultBetweenSessions(newtonDao: NewtonDao) {
-       NewtonResult().getNewtonResultBetweenSessions1(this, newtonDao)
+    override fun init(newtonDao: NewtonDao) {
+       NewtonResult().getNewtonResultBetweenSessions(this, newtonDao)
     }
 }
 
@@ -183,7 +177,7 @@ class MainActivity : AppCompatActivity() {
 
         val db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "newton").build()
         val newtonDao = db.newtonDao()
-        viewModel.getNewtonResultBetweenSessions(newtonDao)
+        viewModel.init(newtonDao)
 
         findViewById<Button>(R.id.buttonResult).setOnClickListener {
             viewModel.operation = findViewById<EditText>(R.id.operation).text.toString()
@@ -194,6 +188,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.buttonInformation).setOnClickListener {
             startActivity(Intent(this, UsageInformationActivity::class.java))
         }
+
         findViewById<Button>(R.id.shareInformation).setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
