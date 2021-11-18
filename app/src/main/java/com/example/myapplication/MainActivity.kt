@@ -28,6 +28,8 @@ import androidx.room.Room
 @Entity
 data class NewtonRoom(
     @ColumnInfo(name = "result") val result: String,
+    @ColumnInfo(name = "operation") val operation: String,
+    @ColumnInfo(name = "expression") val expression: String,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
@@ -63,6 +65,8 @@ enum class ResultOfNewton{
     YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression,
     InputError;
     var result: String? = null
+    var operation: String? = null
+    var expression: String? = null
 }
 
 class NewtonResult {
@@ -90,9 +94,9 @@ class NewtonResult {
                 if (resultNewton != null) {
                     GlobalScope.launch(Dispatchers.IO) {
                         newtonDao.dropAll()
-                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString()))
+                        newtonDao.insertAll(NewtonRoom(resultNewton.result.toString(), operation, expression))
                     }
-                    resultNewtonEnum.result = resultNewton.result.toString()
+                    resultNewtonEnum.result = resultNewton.result
                     addingViewModel.updateLastResult(resultNewtonEnum)
                 } else addingViewModel.updateLastResult(ResultOfNewton.YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression)
             }
@@ -103,14 +107,16 @@ class NewtonResult {
     }
 
     @DelicateCoroutinesApi
-    fun getNewtonResultBetweenSessions(addingViewModel: UpdateLastResult, newtonDao: NewtonDao) {
+    fun getNewtonResultBetweenSessions(listener: UpdateLastResult, newtonDao: NewtonDao) {
         GlobalScope.launch(Dispatchers.IO) {
             val resultNewtonEnum: ResultOfNewton = ResultOfNewton.Nothing
-            val resultNewtonDao = newtonDao.getAll()?.let { NewtonRoom(it.result) }
+            val resultNewtonDao = newtonDao.getAll()
             if (resultNewtonDao != null) {
                 launch(Dispatchers.Main) {
                     resultNewtonEnum.result = resultNewtonDao.result
-                    addingViewModel.updateLastResult(resultNewtonEnum)
+                    resultNewtonEnum.operation = resultNewtonDao.operation
+                    resultNewtonEnum.expression = resultNewtonDao.expression
+                    listener.updateLastResult(resultNewtonEnum)
                 }
             }
         }
@@ -169,8 +175,14 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                    ResultOfNewton.Nothing -> findViewById<TextView>(R.id.textViewResult).text =
-                        getString(R.string.resultTextView) + " " + it.result
+                    ResultOfNewton.Nothing -> {
+                        findViewById<TextView>(R.id.textViewResult).text =
+                            getString(R.string.resultTextView) + " " + it.result
+
+                        findViewById<EditText>(R.id.operation).setText(it.operation)
+
+                        findViewById<EditText>(R.id.expression).setText(it.expression)
+                    }
                 }
             }
         })
