@@ -63,7 +63,8 @@ private interface APINewton {
 enum class ResultOfNewton{
     Nothing,
     YouHaveEnteredAnIncorrectOperationOrAnIncorrectExpression,
-    InputError;
+    InputError,
+    InformationSession;
     var result: String? = null
     var operation: String? = null
     var expression: String? = null
@@ -109,10 +110,11 @@ class NewtonResult {
     @DelicateCoroutinesApi
     fun getNewtonResultBetweenSessions(listener: UpdateLastResult, newtonDao: NewtonDao) {
         GlobalScope.launch(Dispatchers.IO) {
-            val resultNewtonEnum: ResultOfNewton = ResultOfNewton.Nothing
+
             val resultNewtonDao = newtonDao.getAll()
             if (resultNewtonDao != null) {
                 launch(Dispatchers.Main) {
+                    val resultNewtonEnum: ResultOfNewton = ResultOfNewton.InformationSession
                     resultNewtonEnum.result = resultNewtonDao.result
                     resultNewtonEnum.operation = resultNewtonDao.operation
                     resultNewtonEnum.expression = resultNewtonDao.expression
@@ -175,7 +177,11 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                    ResultOfNewton.Nothing -> {
+                    ResultOfNewton.Nothing ->
+                        findViewById<TextView>(R.id.textViewResult).text =
+                            getString(R.string.resultTextView) + " " + it.result
+
+                    ResultOfNewton.InformationSession -> {
                         findViewById<TextView>(R.id.textViewResult).text =
                             getString(R.string.resultTextView) + " " + it.result
 
