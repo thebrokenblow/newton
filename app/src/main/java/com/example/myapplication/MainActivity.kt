@@ -178,8 +178,11 @@ class MainActivity : AppCompatActivity() {
                         ).show()
 
                     ResultOfNewton.Nothing ->
+                        if (it.result != null)
                         findViewById<TextView>(R.id.textViewResult).text =
                             getString(R.string.resultTextView) + " " + it.result
+                    else findViewById<TextView>(R.id.textViewResult).text =
+                            getString(R.string.resultTextView)
 
                     ResultOfNewton.InformationSession -> {
                         findViewById<TextView>(R.id.textViewResult).text =
