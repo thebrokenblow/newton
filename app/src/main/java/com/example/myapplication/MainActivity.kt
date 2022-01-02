@@ -24,7 +24,6 @@ import kotlin.properties.Delegates
 import androidx.room.Database
 
 import androidx.room.Room
-
 @Entity
 data class NewtonRoom(
     @ColumnInfo(name = "result") val result: String,
@@ -149,7 +148,7 @@ class AddingViewModel : ViewModel(), UpdateLastResult, GetNewtonResultBetweenSes
     }
 
     override fun init(newtonDao: NewtonDao) {
-       NewtonResult().getNewtonResultBetweenSessions(this, newtonDao)
+        NewtonResult().getNewtonResultBetweenSessions(this, newtonDao)
     }
 }
 
@@ -179,9 +178,9 @@ class MainActivity : AppCompatActivity() {
 
                     ResultOfNewton.Nothing ->
                         if (it.result != null)
-                        findViewById<TextView>(R.id.textViewResult).text =
-                            getString(R.string.resultTextView) + " " + it.result
-                    else findViewById<TextView>(R.id.textViewResult).text =
+                            findViewById<TextView>(R.id.textViewResult).text =
+                                getString(R.string.resultTextView) + " " + it.result
+                        else findViewById<TextView>(R.id.textViewResult).text =
                             getString(R.string.resultTextView)
 
                     ResultOfNewton.InformationSession -> {

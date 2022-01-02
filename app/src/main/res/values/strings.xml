@@ -5,5 +5,12 @@
     <string name="enter_expression">Enter expression</string>
     <string name="resultButton">Result</string>
     <string name="app_name">NEWTON</string>
-    <string name="resultTextView">Result:</string>
+    <string name="resultTextView">Result: </string>
+    <string name="usage_information">usage information</string>
+    <string name="error_result">You have entered an incorrect operation or an incorrect expression</string>
+    <string name="error_input_result">Input error</string>
+    <string name="back">Back</string>
+    <string name="format_description">Record Format: Operation Expression</string>
+    <string name="Share">Share Result</string>
+    <string name="information_on_using_the_application">Information on using the application</string>
 </resources>

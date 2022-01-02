@@ -5,6 +5,13 @@
     <string name="enter_expression">Введите выражение</string>
     <string name="enter_operation">Введите операцию</string>
     <string name="a_really_micro_micro_service_for_advanced_math">Реальный микро-микро-сервис для продвинутой математики.</string>
-    <string name="newton">newtom</string>
-    <string name="resultTextView">Ответ:</string>
+    <string name="newton">NEWTON</string>
+    <string name="resultTextView">Ответ: </string>
+    <string name="usage_information">инфрмация о использовании</string>
+    <string name="error_result">Вы ввели некорректную операцию или некорректное выражение</string>
+    <string name="error_input_result">Ошибка ввода</string>
+    <string name="back">Назад</string>
+    <string name="format_description">Формат записи: Операция Выражение</string>
+    <string name="Share">Поделится Результатом</string>
+    <string name="information_on_using_the_application">Информация по использованию приложения</string>
 </resources>
