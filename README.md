@@ -18,7 +18,6 @@
     Use `git` and the NEWTON to create a new project
 
     ```sh
-    # create a new MyCompany site using this starter
     git clone thebrokenblow/newton
     ```
 
