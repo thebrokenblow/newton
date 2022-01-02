@@ -31,6 +31,6 @@
 
     <img alt="IDE" align="center" src="https://github.com/thebrokenblow/newton/blob/master/photo/screen.PNG" />
 
-4. **Finish!**
+4.https://github.com/thebrokenblow/newton/blob/master/photo/scrin.PNG **Finish!**
 
    You can edit and add your chips to this project!
